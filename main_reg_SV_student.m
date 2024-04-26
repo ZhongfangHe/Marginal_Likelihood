@@ -5,12 +5,7 @@
 clear;
 dbstop if warning;
 dbstop if error;
-rng(123); %rng(1234567);
-addpath(genpath('C:\Users\Zhongfang\Documents\My Research\Bayesian_TVP\2021Feb\Functions'));
-addpath(genpath('C:\Users\Zhongfang\Documents\My Research\Bayesian_TVP\2021Apr\Functions'));
-addpath(genpath('C:\Users\Zhongfang\Documents\My Research\Bayesian_TVP\2021Jul\Functions'));
-addpath(genpath('C:\Users\Zhongfang\Documents\My Research\Bayesian_TVP\2021Sep\Functions'));
-addpath(genpath('C:\Users\Zhongfang\Documents\My Research\Bayesian_TVP\2024Apr_Marginal_Likelihood\Functions'));
+rng(1234567);
 
 
 %% Gather data
@@ -59,7 +54,7 @@ end
 %% MCMC
 tic;
 nthin = 1;
-ndraws = 5000*3*nthin; %5000;
+ndraws = 5000*2*nthin; %5000;
 burnin = 2000;
 disp(['burnin = ',num2str(burnin),', ndraws = ',num2str(ndraws)]);
 ntotal = burnin + ndraws;

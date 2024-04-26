@@ -10,11 +10,6 @@ clear;
 dbstop if warning;
 dbstop if error;
 rng(123456);
-addpath(genpath('C:\Users\Zhongfang\Documents\My Research\Bayesian_TVP\2021Feb\Functions'));
-addpath(genpath('C:\Users\Zhongfang\Documents\My Research\Bayesian_TVP\2021Apr\Functions'));
-addpath(genpath('C:\Users\Zhongfang\Documents\My Research\Bayesian_TVP\2021Jul\Functions'));
-addpath(genpath('C:\Users\Zhongfang\Documents\My Research\Bayesian_TVP\2021Sep\Functions'));
-addpath(genpath('C:\Users\Zhongfang\Documents\My Research\Bayesian_TVP\2024Apr_Marginal_Likelihood\Functions'));
 
 
 %% Gather data for a probit model
@@ -358,92 +353,6 @@ disp(' ');
 
 
 
-%% GD: direct Gaussian (truncated)
-% tic;
-% truc_lvl = 0.95;
-% bthresh = chi2inv(truc_lvl,K);
-% bmean = mean(draws.b)';
-% bcov = cov(draws.b);
-% bcov_inv = bcov\eye(K);
-% b_covec = bcov_inv * bmean;
-% b_sw = bmean'*bcov_inv*bmean;
-% bcov_half = chol(bcov)';
-% logdet_bcov = 2*sum(log(diag(bcov_half)));
-% w_MHMcov = [];
-% minNum = 1e-100;
-% for drawi = 1:ndraws
-%     bj = draws.b(drawi,:)';
-%     tmp = (bj-bmean)'*bcov_inv*(bj-bmean);
-%     if tmp < bthresh
-%         logpj = -0.5*K*log(2*pi*bvar0)-0.5*sum(bj.^2)/bvar0; %log prior
-%         zp = normcdf(x*bj);
-%         zp1 = zp;
-%         zp1(zp1<minNum) = minNum;
-%         zp0 = 1-zp;
-%         zp0(zp0<minNum)= minNum;
-%         logyj = sum(y.*log(zp1) + (1-y).*log(zp0)); %log likelihood
-%         logqj = -0.5*K*log(2*pi)-0.5*logdet_bcov-0.5*bj'*bcov_inv*bj-0.5*b_sw+bj'*b_covec-log(truc_lvl);
-%         wj = logqj - logpj - logyj;
-%         w_MHMcov = [w_MHMcov; wj];
-%     end
-% end
-% ew = exp(w_MHMcov);
-% ewmean = mean(ew);
-% nw = length(ew);
-% ew_demean = ew - ewmean;
-% nwlag = floor(4*(nw/100)^(2/9));
-% ewvar = sum(ew_demean.^2);
-% for j = 1:nwlag
-%     tau_j = ew_demean(1:nw-j)' * ew_demean(j+1:nw);
-%     ewvar = ewvar + (1 - j/(nwlag+1)) * (tau_j + tau_j');
-% end
-% ewvar = ewvar/nw; 
-% py_mean = 1/ewmean;
-% py_std = sqrt(ewvar/(ewmean^4));
-% disp('Modified HM with posterior mean and cov');
-% disp(['LML = ',num2str(log(py_mean)),' with std = ',num2str(py_std/abs(py_mean))]);
-% toc;
-% disp(' ');
 
-
-%% Chib method
-% tic;
-% bb = median(draws.b)'; %selected local value
-% logp = -0.5*K*log(2*pi*bvar0)-0.5*sum(bb.^2)/bvar0; %log prior
-% zp = normcdf(x*bb);
-% zp1 = zp;
-% zp1(zp1<minNum) = minNum;
-% zp0 = 1-zp;
-% zp0(zp0<minNum)= minNum;
-% logy = sum(y.*log(zp1) + (1-y).*log(zp0)); %log likelihood
-% Binv = eye(K)/bvar0 + x'*x;
-% B = Binv\eye(K);
-% Bhalf = chol(B)';
-% logdet_B = 2*sum(log(diag(Bhalf)));
-% item1 = logp + logy - (-0.5*K*log(2*pi)-0.5*logdet_B-0.5*(bb'*Binv*bb));
-% tmpvec = zeros(ndraws,1);
-% for drawi = 1:ndraws
-%     zj = draws.z(drawi,:)';
-%     Binvb = x'*zj;
-%     tmpvec(drawi) = -0.5*Binvb'*B*Binvb + bb'*Binvb;
-% end
-% wlevel = max(tmpvec);
-% ew = exp(tmpvec-wlevel);
-% ewmean = mean(ew);
-% nw = length(ew);
-% ew_demean = ew - ewmean;
-% nwlag = floor(4*(nw/100)^(2/9));
-% ewvar = sum(ew_demean.^2);
-% for j = 1:nwlag
-%     tau_j = ew_demean(1:nw-j)' * ew_demean(j+1:nw);
-%     ewvar = ewvar + (1 - j/(nwlag+1)) * (tau_j + tau_j');
-% end
-% ewvar = ewvar/nw; 
-% py_mean = 1/ewmean;
-% py_std = sqrt(ewvar/(ewmean^4));
-% disp('Chib method:');
-% disp(['LML = ',num2str(item1-wlevel+log(py_mean)),' with std = ',num2str(py_std/abs(py_mean))]);
-% toc;
-% disp(' ');
 
 
